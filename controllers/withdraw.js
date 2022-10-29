@@ -8,7 +8,6 @@ const withDraw = async (req, res) => {
       return res.send("Withdraw amount invalid");
 
     withdraw.amount -= req.body.amount;
-
     try {
       withdraw = await withdrawDb.findOneAndUpdate(
         { userId: req.params.id },

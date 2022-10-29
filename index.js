@@ -5,7 +5,6 @@ const connectDB = require("./database/config");
 const depositRoutes = require("./routes/deposit");
 const withDrawRoutes = require("./routes/withdraw");
 const userRoutes = require("./routes/user");
-
 const app = express();
 
 // log requests
