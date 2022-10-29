@@ -22,6 +22,9 @@ app.use(express.json());
 app.use("/deposit", depositRoutes);
 app.use("/user", userRoutes);
 app.use("/withdraw", withDrawRoutes);
+app.get("/", (req, res) => {
+  res.send("Hello Homepage");
+});
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

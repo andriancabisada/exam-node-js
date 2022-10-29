@@ -2,19 +2,22 @@ const depositDb = require("../models/deposit");
 
 const deposit = async (req, res) => {
   try {
-    const deposit = await depositDb.find(req.body.userId);
-    deposit.amount = req.body.amount;
+    const deposit = await depositDb.findById(req.body.userId);
+    deposit.amount += req.body.amount;
 
-    await deposit
-      .save(deposit)
-      .then((data) => {
-        res.json(deposit);
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message: err.message || "Some error occurred while deposit",
-        });
-      });
+    try {
+      deposit = await depositDb.findOneAndUpdate(
+        { userId: req.params.id },
+        deposit,
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+      res.json(deposit);
+    } catch (error) {
+      res.send("Error " + error);
+    }
   } catch (error) {
     res.send("Error " + error);
   }
@@ -23,3 +26,8 @@ const deposit = async (req, res) => {
 module.exports = {
   deposit,
 };
+
+// story = await Story.findOneAndUpdate({ _id: req.params.id }, req.body, {
+//     new: true,
+//     runValidators: true,
+//   })

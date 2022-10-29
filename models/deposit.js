@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const depositSchema = mongoose.Schema({
   amount: {
-    type: decimal,
+    type: Number,
     default: 0,
   },
   userId: {

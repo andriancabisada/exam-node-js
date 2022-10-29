@@ -7,18 +7,21 @@ const withDraw = async (req, res) => {
     if (req.body.amount > withdraw.amount)
       return res.send("Withdraw amount invalid");
 
-    withDraw.amount -= req.body.amount;
+    withdraw.amount -= req.body.amount;
 
-    await withdraw
-      .update(withdraw)
-      .then((data) => {
-        res.json(withdraw);
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message: err.message || "Some error occurred while withdrawing",
-        });
-      });
+    try {
+      withdraw = await withdrawDb.findOneAndUpdate(
+        { userId: req.params.id },
+        withdraw,
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+      res.json(withdraw);
+    } catch (error) {
+      res.send("Error " + error);
+    }
   } catch (error) {
     res.send("Error " + error);
   }

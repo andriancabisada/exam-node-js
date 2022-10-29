@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
 const userSchema = mongoose.Schema({
-  name: {
+  userName: {
     type: String,
     require: true,
   },
   accountBalance: {
-    type: decimal,
+    type: Number,
     default: 0,
   },
 });
