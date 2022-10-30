@@ -8,7 +8,7 @@ const createUser = async (req, res) => {
 
   const user = new userDb({
     id: uuidv4(),
-    name: req.body.name,
+    userName: req.body.name,
     amount: 0,
   });
 
@@ -26,7 +26,7 @@ const createUser = async (req, res) => {
     });
 };
 
-const getUser = async (req, res) => {
+const getUserById = async (req, res) => {
   try {
     const user = await userDb.findById(req.params.id);
     res.json(user);
@@ -35,7 +35,17 @@ const getUser = async (req, res) => {
   }
 };
 
+const getUsers = async (req, res) => {
+  try {
+    const user = await userDb.find();
+    res.json(user);
+  } catch (error) {
+    res.send("Error " + error);
+  }
+};
+
 module.exports = {
   createUser,
-  getUser,
+  getUserById,
+  getUsers,
 };

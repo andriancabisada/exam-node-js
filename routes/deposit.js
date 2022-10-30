@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { deposit, getDeposit } = require("../controllers/deposit");
+const { deposit } = require("../controllers/deposit");
 
-router.post("/:id", deposit);
-router.post("/:id", getDeposit);
+router.post("/", deposit);
 
 module.exports = router;
