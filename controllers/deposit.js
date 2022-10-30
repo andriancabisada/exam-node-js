@@ -3,17 +3,21 @@ const userDb = require("../models/user");
 const { v4: uuidv4 } = require("uuid");
 
 const deposit = async (req, res) => {
-  if (checkAccountExists(req.body._id)) {
+  if (!req.body) {
+    res.status(400).send({ message: "Content cannot be empty" });
+  }
+
+  if (checkAccountExists(req.body.id)) {
     const deposit = new depositDb({
       id: uuidv4(),
       amount: req.body.amount,
-      userId: req.body._id,
+      userId: req.body.id,
     });
 
     await deposit
       .save(deposit)
       .then((data) => {
-        updateAccount(req.body._id, req.body.amount);
+        res.json(updateAccount(req.body.id, req.body.amount));
       })
       .catch((err) => {
         res.status(500).send({
@@ -25,6 +29,14 @@ const deposit = async (req, res) => {
   }
 };
 
+const getDeposits = async (req, res) => {
+  try {
+    const deposits = await depositDb.find();
+    res.json(deposits);
+  } catch (error) {
+    res.send("error " + error);
+  }
+};
 async function checkAccountExists(id) {
   const user = await userDb.findById(id);
   if (!user) return false;
@@ -32,22 +44,13 @@ async function checkAccountExists(id) {
 }
 
 async function updateAccount(id, amount) {
-  //const user = await userDb.findById(id);
-  userDb.findOne({ _id: id }, function (err, user) {
-    if (!err) {
-      if (!user) {
-        user = new userDb();
-        user.amount += amount;
-      }
-
-      user.save(function (err) {
-        if (!err) res.json(user);
-        else res.send("Error " + err);
-      });
-    }
-  });
+  const user = await userDb.findOne({ _id: id });
+  user.accountBalance += amount;
+  user.save();
+  return user;
 }
 
 module.exports = {
   deposit,
+  getDeposits,
 };

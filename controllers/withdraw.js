@@ -3,20 +3,24 @@ const userDb = require("../models/user");
 const { v4: uuidv4 } = require("uuid");
 
 const withDraw = async (req, res) => {
+  if (!req.body) {
+    res.status(400).send({ message: "Content cannot be empty" });
+  }
+
   if (
-    checkAccountExists(req.body._id) &&
-    checkValidWithDrawAmount(req.body.amount, req.body._id)
+    checkAccountExists(req.body.id) &&
+    checkValidWithDrawAmount(req.body.id, req.body.amount)
   ) {
     const withdraw = new withdrawDb({
       id: uuidv4(),
       amount: req.body.amount,
-      userId: req.body._id,
+      userId: req.body.id,
     });
 
     await withdraw
       .save(withdraw)
       .then((data) => {
-        updateAccount(req.body._id, req.body.amount);
+        res.json(updateAccount(req.body.id, req.body.amount));
       })
       .catch((err) => {
         res.status(500).send({
@@ -26,16 +30,19 @@ const withDraw = async (req, res) => {
         });
       });
   }
+  res.status(500).send({
+    message: "Account doesn't exist or Withdraw amount is not valid",
+  });
 };
 
-async function checkAccountExists(id) {
-  const user = await userDb.findById(id);
+async function checkAccountExists(_id) {
+  const user = await userDb.findById(_id);
   if (!user) return false;
   return true;
 }
 
-async function checkValidWithDrawAmount(id, amount) {
-  const user = await userDb.findById(id);
+async function checkValidWithDrawAmount(_id, amount) {
+  const user = await userDb.findById(_id);
   if (!user) return false;
 
   if (amount > user.amount) return false;
@@ -43,58 +50,12 @@ async function checkValidWithDrawAmount(id, amount) {
 }
 
 async function updateAccount(id, amount) {
-  const user = await userDb.findById(id);
-  userDb.findOne({ _id: id }, function (err, user) {
-    if (!err) {
-      if (!user) {
-        user = new userDb();
-        user.amount -= amount;
-      }
-
-      user.save(function (err) {
-        if (!err) res.json(user);
-        else res.send("Error " + err);
-      });
-    }
-  });
+  const user = await userDb.findOne({ _id: id });
+  user.accountBalance -= amount;
+  user.save();
+  return user;
 }
 
 module.exports = {
   withDraw,
 };
-
-// withdraw.amount -= req.body.amount;
-// try {
-//   withdraw = await withdrawDb.findOneAndUpdate(
-//     { userId: req.params._id },
-//     withdraw,
-//     {
-//       new: true,
-//       runValidators: true,
-//     }
-//   );
-//   res.json(withdraw);
-// } catch (error) {
-//   res.send("Error " + error);
-// }
-/*
-
-ContactSchema.findOne({phone: request.phone}, function(err, contact) {
-    if(!err) {
-        if(!contact) {
-            contact = new ContactSchema();
-            contact.phone = request.phone;
-        }
-        contact.status = request.status;
-        contact.save(function(err) {
-            if(!err) {
-                console.log("contact " + contact.phone + " created at " + contact.createdAt + " updated at " + contact.updatedAt);
-            }
-            else {
-                console.log("Error: could not save contact " + contact.phone);
-            }
-        });
-    }
-});
-
-*/
