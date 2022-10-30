@@ -1,18 +1,19 @@
 const depositDb = require("../models/deposit");
 const userDb = require("../models/user");
+const { v4: uuidv4 } = require("uuid");
 
 const deposit = async (req, res) => {
-  if (checkAccountExists(req.body.id)) {
+  if (checkAccountExists(req.body._id)) {
     const deposit = new depositDb({
       id: uuidv4(),
-      amount: req.body.name,
-      userId: req.body.id,
+      amount: req.body.amount,
+      userId: req.body._id,
     });
 
     await deposit
       .save(deposit)
       .then((data) => {
-        updateAccount(id, req.body.amount);
+        updateAccount(req.body._id, req.body.amount);
       })
       .catch((err) => {
         res.status(500).send({
@@ -31,7 +32,7 @@ async function checkAccountExists(id) {
 }
 
 async function updateAccount(id, amount) {
-  const user = await userDb.findById(id);
+  //const user = await userDb.findById(id);
   userDb.findOne({ _id: id }, function (err, user) {
     if (!err) {
       if (!user) {

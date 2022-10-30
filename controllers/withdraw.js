@@ -1,21 +1,22 @@
 const withdrawDb = require("../models/withdraw");
 const userDb = require("../models/user");
+const { v4: uuidv4 } = require("uuid");
 
 const withDraw = async (req, res) => {
   if (
-    checkAccountExists(req.body.id) &&
-    checkValidWithDrawAmount(req.body.amount, req.body.id)
+    checkAccountExists(req.body._id) &&
+    checkValidWithDrawAmount(req.body.amount, req.body._id)
   ) {
     const withdraw = new withdrawDb({
       id: uuidv4(),
-      amount: req.body.name,
-      userId: req.body.id,
+      amount: req.body.amount,
+      userId: req.body._id,
     });
 
     await withdraw
       .save(withdraw)
       .then((data) => {
-        updateAccount(id, req.body.amount);
+        updateAccount(req.body._id, req.body.amount);
       })
       .catch((err) => {
         res.status(500).send({
@@ -65,7 +66,7 @@ module.exports = {
 // withdraw.amount -= req.body.amount;
 // try {
 //   withdraw = await withdrawDb.findOneAndUpdate(
-//     { userId: req.params.id },
+//     { userId: req.params._id },
 //     withdraw,
 //     {
 //       new: true,
