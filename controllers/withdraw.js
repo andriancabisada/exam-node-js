@@ -4,8 +4,7 @@ const withDraw = async (req, res) => {
   try {
     const withdraw = await withdrawDb.findById(req.body.userId);
 
-    if (req.body.amount > withdraw.amount)
-      return res.send("Withdraw amount invalid");
+    if (req.body.amount > withdraw.amount) res.send("Withdraw amount invalid");
 
     withdraw.amount -= req.body.amount;
     try {
