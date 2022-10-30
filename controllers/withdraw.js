@@ -25,6 +25,16 @@ const withDraw = async (req, res) => {
   }
 };
 
+const getWithdraw = async (req, res) => {
+  try {
+    const withdraw = await withdrawDb.findById(req.params.id);
+    res.json(withdraw);
+  } catch (error) {
+    res.send("Error " + error);
+  }
+};
+
 module.exports = {
   withDraw,
+  getWithdraw,
 };

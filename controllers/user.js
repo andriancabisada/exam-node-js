@@ -26,6 +26,16 @@ const createUser = async (req, res) => {
     });
 };
 
+const getUser = async (req, res) => {
+  try {
+    const user = await userDb.findById(req.params.id);
+    res.json(user);
+  } catch (error) {
+    res.send("Error " + error);
+  }
+};
+
 module.exports = {
   createUser,
+  getUser,
 };

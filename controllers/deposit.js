@@ -2,15 +2,14 @@ const depositDb = require("../models/deposit");
 
 const deposit = async (req, res) => {
   try {
-    const deposit = await depositDb.findById(req.body.userId);
+    const deposit = await depositDb.findById(req.body.id);
     deposit.amount += req.body.amount;
 
     try {
       deposit = await depositDb.findOneAndUpdate(
-        { userId: req.params.id },
+        { amount: deposit.amount },
         deposit,
         {
-          new: true,
           runValidators: true,
         }
       );
@@ -23,11 +22,16 @@ const deposit = async (req, res) => {
   }
 };
 
-module.exports = {
-  deposit,
+const getDeposit = async (req, res) => {
+  try {
+    const deposit = await depositDb.findById(req.params.id);
+    res.json(deposit);
+  } catch (error) {
+    res.send("Error " + error);
+  }
 };
 
-// story = await Story.findOneAndUpdate({ _id: req.params.id }, req.body, {
-//     new: true,
-//     runValidators: true,
-//   })
+module.exports = {
+  deposit,
+  getDeposit,
+};
