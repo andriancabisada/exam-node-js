@@ -35,14 +35,14 @@ const withDraw = async (req, res) => {
   });
 };
 
-async function checkAccountExists(_id) {
-  const user = await userDb.findById(_id);
+async function checkAccountExists(id) {
+  const user = await userDb.findById(id);
   if (!user) return false;
   return true;
 }
 
-async function checkValidWithDrawAmount(_id, amount) {
-  const user = await userDb.findById(_id);
+async function checkValidWithDrawAmount(id, amount) {
+  const user = await userDb.findById(id);
   if (!user) return false;
 
   if (amount > user.amount) return false;
@@ -52,7 +52,7 @@ async function checkValidWithDrawAmount(_id, amount) {
 async function updateAccount(id, amount) {
   const user = await userDb.findOne({ _id: id });
   user.accountBalance -= amount;
-  user.save();
+  await user.save();
   return user;
 }
 

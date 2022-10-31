@@ -17,7 +17,7 @@ const deposit = async (req, res) => {
     await deposit
       .save(deposit)
       .then((data) => {
-        res.json(updateAccount(req.body.id, req.body.amount));
+        res.json(console.log(updateAccount(req.body.id, req.body.amount)));
       })
       .catch((err) => {
         res.status(500).send({
@@ -46,7 +46,7 @@ async function checkAccountExists(id) {
 async function updateAccount(id, amount) {
   const user = await userDb.findOne({ _id: id });
   user.accountBalance += amount;
-  user.save();
+  await user.save();
   return user;
 }
 
