@@ -11,14 +11,14 @@ const withDraw = async (req, res) => {
     checkAccountExists(req.body.id) &&
     checkValidWithDrawAmount(req.body.id, req.body.amount)
   ) {
-    const withdraw = new withdrawDb({
+    const wd = new withdrawDb({
       id: uuidv4(),
       amount: req.body.amount,
       userId: req.body.id,
     });
 
-    await withdraw
-      .save(withdraw)
+    await wd
+      .save(wd)
       .then((data) => {
         res.json(updateAccount(req.body.id, req.body.amount));
       })
@@ -29,10 +29,11 @@ const withDraw = async (req, res) => {
             "Some error occurred while creating a create operation",
         });
       });
+  } else {
+    res.status(500).send({
+      message: "Account doesn't exist or Withdraw amount is not valid",
+    });
   }
-  res.status(500).send({
-    message: "Account doesn't exist or Withdraw amount is not valid",
-  });
 };
 
 async function checkAccountExists(id) {
@@ -43,9 +44,9 @@ async function checkAccountExists(id) {
 
 async function checkValidWithDrawAmount(id, amount) {
   const user = await userDb.findById(id);
+  if (amount > user.amount) return false;
   if (!user) return false;
 
-  if (amount > user.amount) return false;
   return true;
 }
 
