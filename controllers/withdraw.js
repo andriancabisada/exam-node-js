@@ -44,9 +44,9 @@ async function checkAccountExists(id) {
 
 async function checkValidWithDrawAmount(id, amount) {
   const user = await userDb.findById(id);
-  if (amount > user.amount) return false;
-  if (!user) return false;
 
+  if (!user) return false;
+  if (amount > user.amount) return false;
   return true;
 }
 
