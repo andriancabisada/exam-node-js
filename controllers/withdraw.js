@@ -17,22 +17,17 @@ const withDraw = async (req, res) => {
       userId: req.body.id,
     });
 
-    await wd
-      .save(wd)
-      .then((data) => {
-        res.json(updateAccount(req.body.id, req.body.amount));
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message:
-            err.message ||
-            "Some error occurred while creating a create operation",
-        });
+    try {
+      await wd.save();
+      const usr = await updateAccount(req.body.id, req.body.amount);
+      res.json(usr);
+    } catch (err) {
+      res.status(500).send({
+        message:
+          err.message ||
+          "Some error occurred while creating a create operation",
       });
-  } else {
-    res.status(500).send({
-      message: "Account doesn't exist or Withdraw amount is not valid",
-    });
+    }
   }
 };
 

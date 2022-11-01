@@ -8,24 +8,23 @@ const deposit = async (req, res) => {
   }
 
   if (checkAccountExists(req.body.id)) {
-    const deposit = new depositDb({
+    const dep = new depositDb({
       id: uuidv4(),
       amount: req.body.amount,
       userId: req.body.id,
     });
 
-    await deposit
-      .save(deposit)
-      .then((data) => {
-        res.json(console.log(updateAccount(req.body.id, req.body.amount)));
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message:
-            err.message ||
-            "Some error occurred while creating a create operation",
-        });
+    try {
+      await dep.save();
+      const usr = await updateAccount(req.body.id, req.body.amount);
+      res.json(usr);
+    } catch (err) {
+      res.status(500).send({
+        message:
+          err.message ||
+          "Some error occurred while creating a create operation",
       });
+    }
   }
 };
 
