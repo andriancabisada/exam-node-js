@@ -7,6 +7,27 @@ const withDraw = async (req, res) => {
     res.status(400).send({ message: "Content cannot be empty" });
   }
 
+  const checkAccountExists = async (id) => {
+    const user = await userDb.findById(id);
+    if (!user) return false;
+    return true;
+  };
+
+  const checkValidWithDrawAmount = async (id, amount) => {
+    const user = await userDb.findById(id);
+
+    if (!user) return false;
+    if (amount > user.amount) return false;
+    return true;
+  };
+
+  const updateAccount = async (id, amount) => {
+    const user = await userDb.findOne({ _id: id });
+    user.accountBalance -= amount;
+    await user.save();
+    return user;
+  };
+
   if (
     checkAccountExists(req.body.id) &&
     checkValidWithDrawAmount(req.body.id, req.body.amount)
@@ -30,27 +51,6 @@ const withDraw = async (req, res) => {
     }
   }
 };
-
-async function checkAccountExists(id) {
-  const user = await userDb.findById(id);
-  if (!user) return false;
-  return true;
-}
-
-async function checkValidWithDrawAmount(id, amount) {
-  const user = await userDb.findById(id);
-
-  if (!user) return false;
-  if (amount > user.amount) return false;
-  return true;
-}
-
-async function updateAccount(id, amount) {
-  const user = await userDb.findOne({ _id: id });
-  user.accountBalance -= amount;
-  await user.save();
-  return user;
-}
 
 module.exports = {
   withDraw,
